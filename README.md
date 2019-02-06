@@ -1,2 +1,4 @@
 # Trial-and-Error
-Trying new things. 
+Trying new and deleting some
+
+Hello World
