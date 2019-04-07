@@ -1,3 +1,6 @@
 # Spatiotemporal Forecasting using DL-ConvLSTMs
 ... 
-## Hello World
+## Dataset
+
+-- Gridded daily precipitation over continental US
+-- 
