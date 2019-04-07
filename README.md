@@ -1,3 +1,3 @@
-# Sptatiotemporal Forecasting using Deep-Conv-LSTMs
+# Spatiotemporal Forecasting using DL-ConvLSTMs
 ... 
 ## Hello World
