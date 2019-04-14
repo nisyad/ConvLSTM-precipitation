@@ -4,7 +4,10 @@ Created on Sat Apr 13 21:05:21 2019
 
 @author: sumedh
 """
+import os
 import dataprep
+import numpy as np
+from glob import glob
 from keras.models import Sequential
 from keras.layers.convolutional import Conv2D
 from keras.layers.convolutional_recurrent import ConvLSTM2D
@@ -49,7 +52,8 @@ def create_model(ip_shape, k_size, lr= 0.001 , dec = 0.0, f1 = 16, f2 = 8, loss 
     
     return model
 
-
-x_train, y_train, x_val, y_val = dataprep.prep_data(data, validation_split = 0.3, 20)
-model = create_model()
+path = os.getcwd()
+data = np.load(glob(path+'\\data\\*')[0])
+x_train, y_train, x_val, y_val = dataprep.prep_data(data = data, validation_split = 0.3, window_size = 20)
+model = create_model(x_train.shape[1:], (3,3), 0.005, 0.0, 32, 32, 'mse')
 history = model.fit(x_train, y_train, epochs = 50, validation_data = (x_val, y_val))
