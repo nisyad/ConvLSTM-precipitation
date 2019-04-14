@@ -4,6 +4,7 @@ Created on Sat Apr 13 21:05:21 2019
 
 @author: sumedh
 """
+import dataprep
 from keras.models import Sequential
 from keras.layers.convolutional import Conv2D
 from keras.layers.convolutional_recurrent import ConvLSTM2D
@@ -49,11 +50,6 @@ def create_model(ip_shape, k_size, lr= 0.001 , dec = 0.0, f1 = 16, f2 = 8, loss 
     return model
 
 
-params = {'lr': (0.5, 5, 10),
-          'batch_size': (2, 30, 10),
-          'epochs': [150],
-          'dropout': (0, 0.5, 5),
-          'optimizer': [Adam, Nadam, RMSprop],
-          'losses': [logcosh, binary_crossentropy],
-          'activation':[relu, elu],
-          'last_activation': [sigmoid]}
+x_train, y_train, x_val, y_val = dataprep.prep_data(data, validation_split = 0.3, 20)
+model = create_model()
+history = model.fit(x_train, y_train, epochs = 50, validation_data = (x_val, y_val))
