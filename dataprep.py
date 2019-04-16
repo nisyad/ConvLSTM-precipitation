@@ -6,15 +6,35 @@ Created on Sun Apr 14 00:27:31 2019
 """
 
 import numpy as np
+from sklearn.preprocessing import MinMaxScaler
 
-def prep_data(data, validation_split =0.3, window_size = 20):
+
+def prep_data(data, validation_split =0.3, window_size = 20, scale = False):
     '''
     Split data into training and validation splits
     '''
+    dat = {'train_x': np.empty((0,0)),
+            'train_y': np.empty((0,0)),
+            'val_x': np.empty((0,0)),
+            'val_y': np.empty((0,0)),
+            'scaler_train':[],
+            'scaler_val':[]}
+    
     n = int(len(data)*(1- validation_split))
     train = data[:n]
     val = data[n:]
     
+    if scale:
+        scaler = MinMaxScaler(feature_range = (-1,1))
+        scaler_train = scaler.fit(train[:,:,:,0].reshape(-1,1))
+        scale_t = scaler_train.transform(train[:,:,:,0].reshape(-1,1)).reshape(train.shape[:3])
+        dat['scaler_train'].append(scaler_train)
+        train[:,:,:,0] = scale_t
+        scaler_val = scaler.fit(val[:,:,:,0].reshape(-1,1))
+        scale_v = scaler_val.transform(val[:,:,:,0].reshape(-1,1)).reshape(val.shape[:3])
+        val[:,:,:,0] = scale_v
+        dat['scaler_val'].append(scaler_val)
+        
     x = train[:-1]
     y = train[1:,:,:,0]
     x = reshape_data(x)
@@ -29,8 +49,12 @@ def prep_data(data, validation_split =0.3, window_size = 20):
     x_val = make_windows(x_val, window_size)
     y_val = make_windows(y_val, window_size, True)
     
-    return x , y[:,-1], x_val, y_val[:,-1]
-
+    dat['train_x'] = x
+    dat['train_y'] = y[:,-1]
+    dat['val_x'] = x_val
+    dat['val_y'] = y_val[:,-1]
+    
+    return dat 
 
 def reshape_data(d, b = False):
     '''

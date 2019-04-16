@@ -16,7 +16,6 @@ from keras.optimizers import Adam
 from keras.layers.normalization import BatchNormalization
 from keras.layers import Dropout, Input
 
-
 def create_model(ip_shape, k_size, lr= 0.001 , dec = 0.0, f1 = 16, f2 = 8, loss = 'mse'):
     '''
     Creates the convolutional model 
@@ -68,10 +67,13 @@ def create_model(ip_shape, k_size, lr= 0.001 , dec = 0.0, f1 = 16, f2 = 8, loss 
     
     return model
 
-
+######### Get Data ###############
 path = os.getcwd()
 data = np.load(glob(path+'\\data\\*')[0])
-x_train, y_train, x_val, y_val = dataprep.prep_data(data = data, validation_split = 0.3, window_size = 10)
-model = create_model(x_train.shape[1:], (3,3), 0.005, 0.0, 32, 32, 'mse')
-history = model.fit(x_train, y_train, epochs = 50, validation_data = (x_val, y_val))
+data_sets= dataprep.prep_data(data = data, validation_split = 0.3,
+                               window_size = 10, scale = True)
 
+########### Let the gpus rip #############
+model = create_model(data_sets['train_x'].shape[1:], (3,3), 0.005, 0.0, 32, 32, 'mse')
+history = model.fit(data_sets['train_x'], data_sets['train_y'], epochs = 1,
+                    validation_data = (data_sets['val_x'],data_sets['val_y']))
