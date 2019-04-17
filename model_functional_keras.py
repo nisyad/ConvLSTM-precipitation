@@ -15,6 +15,8 @@ from keras.layers.convolutional_recurrent import ConvLSTM2D
 from keras.optimizers import Adam
 from keras.layers.normalization import BatchNormalization
 from keras.layers import Dropout, Input
+from keras.models import model_from_json
+import datetime as time
 
 def create_model(ip_shape, k_size, lr= 0.001 , dec = 0.0, f1 = 16, f2 = 8, loss = 'mse'):
     '''
@@ -76,5 +78,22 @@ data_sets= dataprep.prep_data(data = data, validation_split = 0.3,
 model = create_model(data_sets['train_x'].shape[1:], (3,3), 0.005, 0.0, 32, 32, 'mse')
 history = model.fit(data_sets['train_x'],
                     data_sets['train_y'],
-                    epochs = 1,
+                    epochs = 2,
                     validation_data = (data_sets['val_x'],data_sets['val_y']))
+
+
+
+# save model to disk as a json format
+st = time.datetime.utcnow().replace(microsecond = 0)
+model_json = model.to_json()
+with open('trained_models/model.json','w') as f:
+    f.write(model_json)
+model.save_weights('trained_models/model.h5')
+
+## load model from json file
+with open('trained_models/model.json','r') as f:
+    json_model = f.read()
+
+loaded_model = model_from_json(json_model)
+model.compile(loss = 'mse', optimizer = 'adam', metrics=['accuracy'])
+
